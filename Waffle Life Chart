@@ -1,0 +1,7 @@
+library(tidyverse)
+library(lubridate)
+library(waffle)
+library(hrbrthemes)
+life_data <- tibble(months = factor(rep(month.abb[1,12],82), levels = month.abb[1:12])) %>% slice(9:(n()-4)) %>% tibble(age=rep(0:80, each=12)) %>% rowid_to_column("row_name")
+life_data <- life_data %>% mutate(era = fct_inorder(case_when(row_name < 166 ~ "Childhood - KSA", row_name < 214 ~ "High School - INDIA", row_name < 273 ~ "College - INDIA", row_name < ((year(Sys.Date()) - 1997)*12) + (month(Sys.Date()) - 15) ~ "Adulting - INDIA",TRUE ~ "Time left")))
+life_data %>% count(era) %>% ggplot(aes(fill = era, values = n)) + geom_waffle(color = "white", n_rows = 12, flip = TRUE) + scale_fill_manual(name = "", values = c("#FF0033","#FCA311","#000000","#3399FF")) + coord_equal() + theme_ipsum(base_family = "IBM Plex Sans", grid = "") + theme_enhance_waffle()
